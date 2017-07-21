@@ -3,6 +3,9 @@ import os
 import sys
 import gnupg
 
+## Usage
+# Run pass2csv /path/to/password-storage
+
 ## options
 # field names
 userfield = "user"
