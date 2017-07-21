@@ -3,6 +3,10 @@ import os
 import sys
 import gnupg
 
+## options
+# field names
+userfield = "user"
+urlfield = "url"
 
 def traverse(path):
     for root, dirs, files in os.walk(path):
@@ -15,10 +19,37 @@ def traverse(path):
 def parse(basepath, path, data):
     name = os.path.splitext(os.path.basename(path))[0]
     group = os.path.dirname(os.path.os.path.relpath(path, basepath))
-    split_data = data.split('\n', maxsplit=1)
+    split_data = data.split('\n')
     password = split_data[0]
-    notes = split_data[1]
-    return [group, name, password, notes]
+    matching_user = [s for s in split_data if userfield+": " in s]
+    user = None
+    url = None
+    if matching_user:
+        for x in matching_user:
+            user_split = x.split(userfield+": ")
+            if len(user_split) == 2:
+                user = user_split[1]
+            else:
+                user = None
+    matching_url = [s for s in split_data if urlfield+": " in s]
+    if matching_url:
+        for x in matching_url:
+            url_split = x.split(urlfield+": ")
+            if len(url_split) == 2:
+                url = url_split[1]
+            else:
+                url = None
+    if url == "None":
+        if user == "None":
+            return [group, name, password]
+        else:
+            return [group, name, password, user]
+    else:
+        if user == "None":
+            return [group, name, password, url]
+        else:
+            return [group, name, password, url, user]
+        
 
 
 def main(path):
